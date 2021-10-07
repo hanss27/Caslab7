@@ -1,4 +1,5 @@
-**Financial Assistant GUI\n
+**Financial Assistant GUI**
+
 This app will help you to manage your financial status.
 
 Tools Provided:
