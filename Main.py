@@ -14,12 +14,14 @@ class Greet(QtWidgets.QMainWindow):
     
     def loginbtn(self):
         print("Login Button")
+        login.clear()
         widget.setFixedHeight(542)
         widget.setFixedWidth(476)
         widget.setCurrentIndex(widget.currentIndex()+1)
 
     def signupbtn(self):
         print("Sign up Button") 
+        signup.clear()
         widget.setFixedHeight(542)
         widget.setFixedWidth(476)
         widget.setCurrentIndex(widget.currentIndex()+2)
@@ -40,15 +42,21 @@ class Login(QtWidgets.QMainWindow):
         self.password.setEchoMode(QtWidgets.QLineEdit.Password)
         self.password.setStyleSheet('lineedit-password-character: 9679')
 
+    def clear(self):
+        print("test clear")
+        self.username.clear()
+        self.password.clear()
+        self.cond.clear()
+
     def visible(self):
         self.co +=1
         if (self.co%2 == 0):
-            print("Visible")
+            print("Invisible")
             self.password.setEchoMode(QtWidgets.QLineEdit.Normal)
             self.visiblebutton.setStyleSheet("background-image : url(visible.png);")
 
         else:
-            print("Invisible")
+            print("Visible")
             self.password.setEchoMode(QtWidgets.QLineEdit.Password)
             self.password.setStyleSheet('lineedit-password-character: 9679')      
             self.visiblebutton.setStyleSheet("background-image : url(invisible.png);")
@@ -94,7 +102,11 @@ class Signup(QtWidgets.QMainWindow):
         widget.setFixedWidth(421)
         widget.setCurrentIndex(widget.currentIndex()-2)
 
-
+    def clear(self):
+        print("test clear")
+        self.unsignup.clear()
+        self.pwsignup.clear()
+        self.cpwsignup.clear()
 
 #Load Database
 file = open('database.csv')
