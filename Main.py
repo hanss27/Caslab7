@@ -43,12 +43,12 @@ class Login(QtWidgets.QMainWindow):
     def visible(self):
         self.co +=1
         if (self.co%2 == 0):
-            print("Invisible")
+            print("Visible")
             self.password.setEchoMode(QtWidgets.QLineEdit.Normal)
             self.visiblebutton.setStyleSheet("background-image : url(visible.png);")
 
         else:
-            print("Visible")
+            print("Invisible")
             self.password.setEchoMode(QtWidgets.QLineEdit.Password)
             self.password.setStyleSheet('lineedit-password-character: 9679')      
             self.visiblebutton.setStyleSheet("background-image : url(invisible.png);")
