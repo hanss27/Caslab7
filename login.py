@@ -9,6 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import os
+import numpy as np
+import math
 
 
 class Ui_Login(object):
@@ -49,7 +52,9 @@ class Ui_Login(object):
         self.label3.setObjectName("label3")
         self.password = QtWidgets.QLineEdit(self.centralwidget)
         self.password.setGeometry(QtCore.QRect(160, 250, 221, 31))
-        self.password.setObjectName("password")
+        self.password.setObjectName("password") 
+        
+
         self.label4 = QtWidgets.QLabel(self.centralwidget)
         self.label4.setGeometry(QtCore.QRect(120, 490, 211, 21))
         self.label4.setObjectName("label4")
@@ -79,13 +84,13 @@ class Ui_Login(object):
         self.label4.setText(_translate("Login", "If you dont have account, click"))
         self.createaccbutton.setText(_translate("Login", "Create Account"))
         self.loginbutton.setText(_translate("Login", "Login"))
-
+    
 
 if __name__ == "__main__":
     import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Login = QtWidgets.QMainWindow()
-    ui = Ui_Login()
-    ui.setupUi(Login)
-    Login.show()
-    sys.exit(app.exec_())
+    # app = QtWidgets.QApplication(sys.argv)
+    # Login = QtWidgets.QMainWindow()
+    # ui = Ui_Login()
+    # ui.setupUi(Login)
+    # Login.show()
+    # sys.exit(app.exec_())

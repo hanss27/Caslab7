@@ -9,8 +9,10 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
-
+import os, sys, math
+from PyQt5.uic import loadUi
+import numpy as np
+import runpy
 class Ui_Greet(object):
     def setupUi(self, Greet):
         Greet.setObjectName("Greet")
@@ -25,9 +27,11 @@ class Ui_Greet(object):
         font.setPointSize(12)
         font.setBold(True)
         font.setWeight(75)
+
+        #Button
         self.button1.setFont(font)
         self.button1.setStyleSheet("background-color: rgb(226, 131, 180);\n"
-"")
+"")        
         self.button1.setObjectName("button1")
         self.button2 = QtWidgets.QPushButton(self.centralwidget)
         self.button2.setGeometry(QtCore.QRect(120, 110, 201, 51))
@@ -40,6 +44,9 @@ class Ui_Greet(object):
         self.button2.setStyleSheet("background-color: rgb(226, 131, 180);\n"
 "")
         self.button2.setObjectName("button2")
+        
+ 
+
         Greet.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(Greet)
         self.statusbar.setObjectName("statusbar")
@@ -56,9 +63,11 @@ class Ui_Greet(object):
 
 
 if __name__ == "__main__":
-    import sys
+    import login
+
     app = QtWidgets.QApplication(sys.argv)
     Greet = QtWidgets.QMainWindow()
+
     ui = Ui_Greet()
     ui.setupUi(Greet)
     Greet.show()
