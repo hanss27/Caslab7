@@ -1,5 +1,6 @@
 Financial Assistant GUI
 This app will help you to manage your financial status.
+
 Tools Provided:
 - Login System
 - Income Statement
