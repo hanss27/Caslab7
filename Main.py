@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import os, sys, math, csv
+import os, sys, math, csv, time
 from PyQt5.uic import loadUi
 
 
@@ -35,8 +35,7 @@ class Login(QtWidgets.QMainWindow):
         self.loginbutton.clicked.connect(self.login)
         self.createaccbutton.clicked.connect(self.signup) 
         self.visiblebutton.clicked.connect(self.visible)
-        self.visiblebutton.setStyleSheet("background-image : url(invisible.png);")
-
+        self.visiblebutton.setStyleSheet("background-image : url(img/invisible.png);")
         
         #SET PASSWORD
         self.password.setEchoMode(QtWidgets.QLineEdit.Password)
@@ -53,13 +52,13 @@ class Login(QtWidgets.QMainWindow):
         if (self.co%2 == 0):
             print("Invisible")
             self.password.setEchoMode(QtWidgets.QLineEdit.Normal)
-            self.visiblebutton.setStyleSheet("background-image : url(visible.png);")
+            self.visiblebutton.setStyleSheet("background-image : url(img/visible.png);")
 
         else:
             print("Visible")
             self.password.setEchoMode(QtWidgets.QLineEdit.Password)
             self.password.setStyleSheet('lineedit-password-character: 9679')      
-            self.visiblebutton.setStyleSheet("background-image : url(invisible.png);")
+            self.visiblebutton.setStyleSheet("background-image : url(img/invisible.png);")
 
     def login(self):
         print("Login Button")
@@ -83,9 +82,17 @@ class Login(QtWidgets.QMainWindow):
                     break         
         if counter == 0:
             self.cond.setText("Username or Password is incorrect")
-
+        
+        if self.cond.text() == "Login Succesfull!":
+                
+                widget.setFixedHeight(686)
+                widget.setFixedWidth(660)
+                widget.setCurrentIndex(widget.currentIndex()+2)
+        
+        
     def signup(self):
         print("Sign up Button") 
+        signup.clear()
         widget.setFixedHeight(542)
         widget.setFixedWidth(476)
         widget.setCurrentIndex(widget.currentIndex()+1)
@@ -108,6 +115,11 @@ class Signup(QtWidgets.QMainWindow):
         self.pwsignup.clear()
         self.cpwsignup.clear()
 
+class Main(QtWidgets.QMainWindow):
+    def __init__(self):
+        QtWidgets.QMainWindow.__init__(self)
+        loadUi("main.ui", self)
+
 #Load Database
 file = open('database.csv')
 csvreader = csv.reader(file)
@@ -123,9 +135,11 @@ widget = QtWidgets.QStackedWidget()
 greet= Greet()
 login = Login()
 signup = Signup()
+main  = Main()
 widget.addWidget(greet)
 widget.addWidget(login)
 widget.addWidget(signup)
+widget.addWidget(main)
 widget.setFixedHeight(201)
 widget.setFixedWidth(421)
 widget.show()
