@@ -125,7 +125,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="body1">
+   <widget class="QLabel" name="body">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -336,7 +336,7 @@ background-image : url(img/notes.png)
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="notelabel_2">
+   <widget class="QLabel" name="explabel2">
     <property name="geometry">
      <rect>
       <x>130</x>
@@ -408,7 +408,7 @@ background-color:rgb(192,189,201);</string>
      <string>Income</string>
     </property>
    </widget>
-   <widget class="QLabel" name="notelabel_3">
+   <widget class="QLabel" name="explabel">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -432,7 +432,7 @@ background-color:rgb(192,189,201);</string>
      <string>Expenditure</string>
     </property>
    </widget>
-   <widget class="QLabel" name="notelabel_4">
+   <widget class="QLabel" name="explabel3">
     <property name="geometry">
      <rect>
       <x>140</x>
@@ -457,7 +457,7 @@ color : red;</string>
      <string>Rp</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="username">
+   <widget class="QLineEdit" name="expenditure">
     <property name="geometry">
      <rect>
       <x>180</x>
@@ -490,7 +490,7 @@ color : red;</string>
     <property name="geometry">
      <rect>
       <x>230</x>
-      <y>520</y>
+      <y>510</y>
       <width>181</width>
       <height>41</height>
      </rect>
@@ -509,12 +509,12 @@ color : red;</string>
      <string>Save</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="username_2">
+   <widget class="QLineEdit" name="note">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>350</y>
-      <width>321</width>
+      <width>601</width>
       <height>51</height>
      </rect>
     </property>
@@ -525,23 +525,36 @@ color : red;</string>
      <string>Note :</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="username_3">
+   <widget class="QPushButton" name="datebutton">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>420</y>
-      <width>321</width>
+      <width>601</width>
       <height>51</height>
      </rect>
     </property>
-    <property name="styleSheet">
-     <string notr="true">background-color:rgb(226,226,226);</string>
-    </property>
     <property name="text">
-     <string>Date :</string>
+     <string>Date</string>
     </property>
    </widget>
-   <zorder>body1</zorder>
+   <widget class="Line" name="line_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>490</y>
+      <width>671</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:white;</string>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <zorder>body</zorder>
    <zorder>footer</zorder>
    <zorder>addbutton</zorder>
    <zorder>header</zorder>
@@ -553,16 +566,17 @@ color : red;</string>
    <zorder>addicon</zorder>
    <zorder>statementlabel</zorder>
    <zorder>statementicon</zorder>
-   <zorder>notelabel_2</zorder>
+   <zorder>explabel2</zorder>
    <zorder>homebutton_3</zorder>
-   <zorder>notelabel_3</zorder>
+   <zorder>explabel</zorder>
    <zorder>homebutton_2</zorder>
-   <zorder>notelabel_4</zorder>
-   <zorder>username</zorder>
+   <zorder>explabel3</zorder>
+   <zorder>expenditure</zorder>
    <zorder>line</zorder>
    <zorder>homebutton_4</zorder>
-   <zorder>username_2</zorder>
-   <zorder>username_3</zorder>
+   <zorder>note</zorder>
+   <zorder>datebutton</zorder>
+   <zorder>line_2</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
