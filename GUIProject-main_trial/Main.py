@@ -137,12 +137,12 @@ class Signup(QtWidgets.QMainWindow): #QtWidgets.QDialog
     def visible_cpw(self):
             self.co +=1
             if (self.co%2 == 0):
-                print("Invisible")
+                print("Visible")
                 self.cpwsignup.setEchoMode(QtWidgets.QLineEdit.Normal)
                 self.visiblebutton_2.setStyleSheet("background-image : url(visible.png);")
 
             else:
-                print("Visible")
+                print("Invisible")
                 self.cpwsignup.setEchoMode(QtWidgets.QLineEdit.Password)
                 self.cpwsignup.setStyleSheet('lineedit-password-character: 9679')      
                 self.visiblebutton_2.setStyleSheet("background-image : url(invisible.png);")
@@ -154,19 +154,29 @@ class Signup(QtWidgets.QMainWindow): #QtWidgets.QDialog
         password2 =self.cpwsignup.text()
         self.cond.setStyleSheet("color: red;")
 
-        with open('database.csv',mode='a', newline='') as Fileappend:
-            Writer = csv.writer(Fileappend,delimiter=",")
-            
+        with open('database.csv',mode='a', newline='') as file:
+            Writer = csv.writer(file,delimiter=",")
+            self.signcounter = 0
             for line in rows : 
                 if line[0] != user:
                     print("Username allowed")
-                    if password == password2:
-                        Writer.writerow([user,password])
+                    self.signcounter += 1
                 else:
                     print("Username existed!")
                     self.cond.setStyleSheet("color: red;")
                     self.cond.setText("Username already existed!")
+                    break
 
+            if (self.signcounter == len(rows)):
+                if password == password2:
+                    self.cond.setStyleSheet("color : green")
+                    self.cond.setText("Account Created!")
+                    Writer.writerow([user,password])
+                    rows.append([user,password])
+                else:
+                    self.cond.setStyleSheet("color: red;")
+                    self.cond.setText("Confirm Error!")
+        file.close()
     def main(self):
         print("Back to main")        
         widget.setFixedHeight(201)
@@ -188,6 +198,7 @@ header = next(csvreader)
 rows = []
 for row in csvreader:
     rows.append(row)
+file.close()
 
 #Call Qt
 app = QtWidgets.QApplication(sys.argv)

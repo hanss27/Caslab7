@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import os, sys, math, csv, time
+import os, sys, csv
 from PyQt5.uic import loadUi
 
 
@@ -49,13 +49,13 @@ class Login(QtWidgets.QMainWindow):
 
     def visible(self):
         self.co +=1
-        if (self.co%2 == 0):
-            print("Invisible")
+        if (self.co%2 == 0): #Cek Ganjil Genap
+            print("Visible")
             self.password.setEchoMode(QtWidgets.QLineEdit.Normal)
             self.visiblebutton.setStyleSheet("background-image : url(img/visible.png);")
 
         else:
-            print("Visible")
+            print("Invisible")
             self.password.setEchoMode(QtWidgets.QLineEdit.Password)
             self.password.setStyleSheet('lineedit-password-character: 9679')      
             self.visiblebutton.setStyleSheet("background-image : url(img/invisible.png);")
@@ -97,23 +97,92 @@ class Login(QtWidgets.QMainWindow):
         widget.setFixedWidth(476)
         widget.setCurrentIndex(widget.currentIndex()+1)
 
-class Signup(QtWidgets.QMainWindow):
+class Signup(QtWidgets.QMainWindow): #QtWidgets.QDialog
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         loadUi("signup.ui", self)
         self.mainbutton.clicked.connect(self.main)
+        self.signupbutton.clicked.connect(self.Signup)
+        self.visiblebutton.clicked.connect(self.visible)
+        self.visiblebutton.setStyleSheet("background-image : url(img/invisible.png);")
+        self.visiblebutton_2.clicked.connect(self.visible_cpw)
+        self.visiblebutton_2.setStyleSheet("background-image : url(img/invisible.png);")
+        self.co = 1
 
-    def main(self):
-        print("Back to main")        
-        widget.setFixedHeight(201)
-        widget.setFixedWidth(421)
-        widget.setCurrentIndex(widget.currentIndex()-2)
+        #SET PASSWORD
+        self.pwsignup.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.pwsignup.setStyleSheet('lineedit-password-character: 9679')
+        self.cpwsignup.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.cpwsignup.setStyleSheet('lineedit-password-character: 9679')
 
     def clear(self):
         print("test clear")
         self.unsignup.clear()
         self.pwsignup.clear()
         self.cpwsignup.clear()
+        self.cond.clear()
+
+    def visible(self):
+            self.co +=1
+            if (self.co%2 == 0):
+                print("Invisible")
+                self.pwsignup.setEchoMode(QtWidgets.QLineEdit.Normal)
+                self.visiblebutton.setStyleSheet("background-image : url(img/visible.png);")
+
+            else:
+                print("Visible")
+                self.pwsignup.setEchoMode(QtWidgets.QLineEdit.Password)
+                self.pwsignup.setStyleSheet('lineedit-password-character: 9679')         
+                self.visiblebutton.setStyleSheet("background-image : url(img/invisible.png);")
+
+    def visible_cpw(self):
+            self.co +=1
+            if (self.co%2 == 0):
+                print("Visible")
+                self.cpwsignup.setEchoMode(QtWidgets.QLineEdit.Normal)
+                self.visiblebutton_2.setStyleSheet("background-image : url(img/visible.png);")
+
+            else:
+                print("Invisible")
+                self.cpwsignup.setEchoMode(QtWidgets.QLineEdit.Password)
+                self.cpwsignup.setStyleSheet('lineedit-password-character: 9679')      
+                self.visiblebutton_2.setStyleSheet("background-image : url(img/invisible.png);")
+
+    def Signup(self):
+        print("Signup Button")
+        user = self.unsignup.text()
+        password = self.pwsignup.text()
+        password2 =self.cpwsignup.text()
+        self.cond.setStyleSheet("color: red;")
+
+        with open('database.csv',mode='a', newline='') as file:
+            Writer = csv.writer(file,delimiter=",")
+            self.signcounter = 0
+            for line in rows : 
+                if line[0] != user:
+                    print("Username allowed")
+                    self.signcounter += 1
+                else:
+                    print("Username existed!")
+                    self.cond.setStyleSheet("color: red;")
+                    self.cond.setText("Username already existed!")
+                    break
+
+            if (self.signcounter == len(rows)):
+                if password == password2:
+                    self.cond.setStyleSheet("color : green")
+                    self.cond.setText("Account Created!")
+                    Writer.writerow([user,password])
+                    rows.append([user,password])
+                else:
+                    self.cond.setStyleSheet("color: red;")
+                    self.cond.setText("Confirm Error!")
+        file.close()
+    def main(self):
+        print("Back to main")        
+        widget.setFixedHeight(201)
+        widget.setFixedWidth(421)
+        widget.setCurrentIndex(widget.currentIndex()-2)
 
 class Main(QtWidgets.QMainWindow):
     def __init__(self):
@@ -128,6 +197,7 @@ header = next(csvreader)
 rows = []
 for row in csvreader:
     rows.append(row)
+file.close()
 
 #Call Qt
 app = QtWidgets.QApplication(sys.argv)
