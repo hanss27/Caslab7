@@ -1,3 +1,4 @@
+from posixpath import expanduser
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os, sys, csv
 from PyQt5.uic import loadUi
@@ -194,13 +195,17 @@ class Main(QtWidgets.QMainWindow):
     def __init__(self,logincounter):
         QtWidgets.QMainWindow.__init__(self)
         loadUi("main.ui", self)
+       
         self.finstatbtn.clicked.connect(self.finstatwin)
         self.finstatbtn2.clicked.connect(self.finstatwin)
-        self.logincounter = logincounter       
-        for i in transrows[self.logincounter]:
-            y = i.split(";")
-            y[2] = int(y[2])
-            trans.append(y) 
+        self.logincounter = logincounter
+        print(len(transrows))
+        if len(transrows) > logincounter:       
+            for i in transrows[self.logincounter]:
+                y = i.split(";") 
+                y[2] = int(y[2])
+                trans.append(y) 
+
     def finstatwin(self):
             print("Finstat Button")
             widget.setCurrentIndex(widget.currentIndex()+1)
@@ -214,69 +219,108 @@ class Finstat(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self)
         loadUi("finstat.ui", self)
         count = 0
-        
-        suminc = 0
-        sumexp = 0
-        sumincoth = 0
-        sumexpoth = 0
-        print(trans)
-        month = ""
-        for i in trans:
-            count += 1
-            if count == 1:
-                month = i[0][3:5]
-                date = i[0][3:len(i[0])]
-                self.monthlabel.setText(date)
-            if count <= 6 and month == i[0][3:5]:
-                transinc = "top%dlabelinc" % count
-                date = transinc[:len(transinc)-3]
-                transexp = "top%dlabelexp" % count
-                if i[2] > 0:
-                    incprice = "Rp.%d" % i[2]
-                    expprice = "-"
-                    suminc += i[2]
+        self.month = []
+        self.date = []
+        self.inc = []
+        self.exp =[]
+        self.suminc = []
+        self.sumexp = []
+        tempdate = []
+        tempinc = []
+        tempexp = []
+        tempsuminc = 0
+        tempsumexp = 0
+        if len(trans) != 0:
+            for i in trans:
+                count += 1
+                if count == 1:
+                    mon = i[0][3:len(i[0])]
+                    self.month.append(mon)
+                    self.monthselector.addItem(mon)
+                    self.monthlabel.setText(mon)       
+                if self.month[len(self.month)-1] == i[0][3:len(i[0])]:
+                    tempdate.append(i[0])  
+                    if i[2] > 0:
+                        tempinc.append(i[2])
+                        tempexp.append(0)
+                        tempsuminc += i[2]
+                    elif i[2] < 0:
+                        expe = i[2] * -1
+                        tempinc.append(0)
+                        tempexp.append(expe)
+                        tempsumexp += expe
+                else:
+                    mon = i[0][3:len(i[0])]
+                    self.monthselector.addItem(mon)
+                    self.month.append(mon)
+                    self.inc.append(tempinc[:])
+                    self.exp.append(tempexp[:])
+                    self.suminc.append(tempsuminc)
+                    self.sumexp.append(tempsumexp)
 
-                elif i[2] < 0:
-                    incprice = "-"
-                    exp = i[2] * -1
-                    expprice = "Rp.%d" % exp
-                    sumexp += exp
-                
-                
-                callinc = "self.%s.setText(incprice)" % transinc
-                callexp = "self.%s.setText(expprice)" % transexp
-                datecall = "self.%s.setText(i[0])" % date
-                exec(callinc)
-                exec(callexp)               
-                exec(datecall)
+                    self.date.append(tempdate[:])
+
+                    tempdate.clear()
+                    tempinc.clear()
+                    tempexp.clear()
+                    tempsuminc = 0
+                    tempsumexp = 0
+
+                    tempdate.append(i[0])
+                    if i[2] > 0:
+                        tempinc.append(i[2])
+                        tempexp.append(0)
+                        tempsuminc += i[2]
+                    elif i[2] < 0:
+                        expe = i[2] * -1
+                        tempinc.append(0)
+                        tempexp.append(expe)
+                        tempsumexp += expe
+            self.date.append(tempdate[:])
+
+            self.inc.append(tempinc)
+            self.exp.append(tempexp)
+            self.suminc.append(tempsuminc)
+            self.sumexp.append(tempsumexp)
+      
+        else:
+            self.monthlabel.setText("-")
+            self.monthincome.setText("-")
+            self.monthexpen.setText("-")
+        
+        #First initialize on UI
+        self.disp(0)
+        self.balance = sum(self.suminc) - sum(self.sumexp)
+        balancelbl = "Rp.%d" % self.balance
+        self.balancemoney.setText(balancelbl)
+        self.monthselector.currentIndexChanged.connect(self.disp)
+
+
+    def disp(self,co):
+        for i in range(len(self.date[co])):
+            a = i+1
+            datelbl = "top%dlabel" % a
+            if self.inc[co][i] != 0:
+                inclbl = "Rp.%d" % self.inc[co][i]
             else:
-                if i[2] > 0:
-                    sumincoth += i[2]
-
-                elif i[2] < 0:
-                    expoth = i[2] * -1
-                    sumexpoth += expoth
-
-        a = "Rp.%d" % suminc
-        b = "Rp.%d" % sumexp
-        
-        if sumincoth == 0:
-            self.otherlabelinc.setText("-")
-        else:
-            incoth = "Rp.%d" % sumincoth
-            self.otherlabelinc.setText(incoth)
-
-        if sumexpoth == 0:
-            self.otherlabelexp.setText("-")
-        else:
-            expoth = "Rp.%d" % sumexpoth
-            self.otherlabelexp.setText(expoth)
-
-        balance = suminc +sumincoth - sumexp - sumexpoth 
-        self.monthincome.setText(a)
-        self.monthexpen.setText(b)
-
-
+                inclbl = "-"
+            if self.exp[co][i] != 0:
+                explbl = "Rp.%d" % self.exp[co][i]
+            else:
+                explbl = "-"
+            incomelbl = "top%dlabelinc" % a
+            expenlbl = "top%dlabelexp" % a
+            transdate = "self.%s.setText(self.date[co][i])" % datelbl
+            transinc = "self.%s.setText(inclbl)" % incomelbl
+            transexp = "self.%s.setText(explbl)" % expenlbl 
+            exec(transdate)
+            exec(transinc)
+            exec(transexp)
+        suminclbl= "Rp.%d" % self.suminc[co]
+        sumexplbl = "Rp.%d" % self.sumexp[co]
+        self.monthlabel.setText(self.month[co])
+        self.monthincome.setText(suminclbl)
+        self.monthexpen.setText(sumexplbl)
         
 #Load Database
 file = open('database.csv')
