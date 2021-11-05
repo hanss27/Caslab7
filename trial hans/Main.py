@@ -219,12 +219,7 @@ class Finstat(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self)
         loadUi("finstat.ui", self)
         count = 0
-        self.month = []
-        self.date = []
-        self.inc = []
-        self.exp =[]
-        self.suminc = []
-        self.sumexp = []
+        
         tempdate = []
         tempinc = []
         tempexp = []
@@ -233,13 +228,18 @@ class Finstat(QtWidgets.QMainWindow):
         if len(trans) != 0:
             for i in trans:
                 count += 1
+                moncounter = i[0][0:7]
+                mon = monthlist[int(moncounter[5:7])-1] + " "
+                mon += moncounter[0:4]
+                datelbl = i[0][8:10] + " " + mon
+                print(datelbl)
+                print(mon)
                 if count == 1:
-                    mon = i[0][3:len(i[0])]
-                    self.month.append(mon)
+                    month.append(mon)
                     self.monthselector.addItem(mon)
                     self.monthlabel.setText(mon)       
-                if self.month[len(self.month)-1] == i[0][3:len(i[0])]:
-                    tempdate.append(i[0])  
+                if month[len(month)-1] == mon:
+                    tempdate.append(datelbl)  
                     if i[2] > 0:
                         tempinc.append(i[2])
                         tempexp.append(0)
@@ -250,15 +250,14 @@ class Finstat(QtWidgets.QMainWindow):
                         tempexp.append(expe)
                         tempsumexp += expe
                 else:
-                    mon = i[0][3:len(i[0])]
                     self.monthselector.addItem(mon)
-                    self.month.append(mon)
-                    self.inc.append(tempinc[:])
-                    self.exp.append(tempexp[:])
-                    self.suminc.append(tempsuminc)
-                    self.sumexp.append(tempsumexp)
+                    month.append(mon)
+                    inc.append(tempinc[:])
+                    exp.append(tempexp[:])
+                    suminc.append(tempsuminc)
+                    sumexp.append(tempsumexp)
 
-                    self.date.append(tempdate[:])
+                    date.append(tempdate[:])
 
                     tempdate.clear()
                     tempinc.clear()
@@ -276,12 +275,12 @@ class Finstat(QtWidgets.QMainWindow):
                         tempinc.append(0)
                         tempexp.append(expe)
                         tempsumexp += expe
-            self.date.append(tempdate[:])
+            date.append(tempdate[:])
 
-            self.inc.append(tempinc)
-            self.exp.append(tempexp)
-            self.suminc.append(tempsuminc)
-            self.sumexp.append(tempsumexp)
+            inc.append(tempinc)
+            exp.append(tempexp)
+            suminc.append(tempsuminc)
+            sumexp.append(tempsumexp)
       
         else:
             self.monthlabel.setText("-")
@@ -290,35 +289,35 @@ class Finstat(QtWidgets.QMainWindow):
         
         #First initialize on UI
         self.disp(0)
-        self.balance = sum(self.suminc) - sum(self.sumexp)
-        balancelbl = "Rp.%d" % self.balance
+        balance = sum(suminc) - sum(sumexp)
+        balancelbl = "Rp.%d" % balance
         self.balancemoney.setText(balancelbl)
         self.monthselector.currentIndexChanged.connect(self.disp)
 
 
     def disp(self,co):
-        for i in range(len(self.date[co])):
+        for i in range(len(date[co])):
             a = i+1
             datelbl = "top%dlabel" % a
-            if self.inc[co][i] != 0:
-                inclbl = "Rp.%d" % self.inc[co][i]
+            if inc[co][i] != 0:
+                inclbl = "Rp.%d" % inc[co][i]
             else:
                 inclbl = "-"
-            if self.exp[co][i] != 0:
-                explbl = "Rp.%d" % self.exp[co][i]
+            if exp[co][i] != 0:
+                explbl = "Rp.%d" % exp[co][i]
             else:
                 explbl = "-"
             incomelbl = "top%dlabelinc" % a
             expenlbl = "top%dlabelexp" % a
-            transdate = "self.%s.setText(self.date[co][i])" % datelbl
+            transdate = "self.%s.setText(date[co][i])" % datelbl
             transinc = "self.%s.setText(inclbl)" % incomelbl
             transexp = "self.%s.setText(explbl)" % expenlbl 
             exec(transdate)
             exec(transinc)
             exec(transexp)
-        suminclbl= "Rp.%d" % self.suminc[co]
-        sumexplbl = "Rp.%d" % self.sumexp[co]
-        self.monthlabel.setText(self.month[co])
+        suminclbl= "Rp.%d" % suminc[co]
+        sumexplbl = "Rp.%d" % sumexp[co]
+        self.monthlabel.setText(month[co])
         self.monthincome.setText(suminclbl)
         self.monthexpen.setText(sumexplbl)
         
@@ -328,10 +327,18 @@ csvreader = csv.reader(file)
 header = []
 header = next(csvreader)
 rows = []
+monthlist = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Des"]
 for row in csvreader:
     rows.append(row)
 file.close()
 
+month = []
+date = []
+inc = []
+exp =[]
+suminc = []
+sumexp = []
+balance = 0
 file2 = open('income.csv')
 csvreader = csv.reader(file2)
 headerinc = []
