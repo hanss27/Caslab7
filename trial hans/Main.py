@@ -1,6 +1,12 @@
 from posixpath import expanduser
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QSize, Qt, QDate
+from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QMessageBox
 import os, sys, csv
+import numpy as np
+from matplotlib.backends.backend_qt5agg import FigureCanvas
+from matplotlib.backends.backend_qt5agg import ( NavigationToolbar2QT  as  NavigationToolbar )
+from matplotlib.figure import Figure
 from PyQt5.uic import loadUi
 
 
@@ -76,11 +82,21 @@ class Login(QtWidgets.QMainWindow):
                 if i[1] == password:
                     print("Access Granted")
                     self.cond.setStyleSheet("color: green;")
+                    
                     self.cond.setText("Login Succesfull!")
-                    main  = Main(count-1)
-                    widget.addWidget(main)
-                    finstat = Finstat()
-                    widget.addWidget(finstat)
+                    self.month = []
+                    self.date = []
+                    self.inc = []
+                    self.exp =[]
+                    self.suminc = []
+                    self.sumexp = []
+                    self.main  = Main(count-1)
+                    widget.addWidget(self.main)
+                    self.finstat = Finstat()
+                    balance = self.finstat.balance
+                    widget.addWidget(self.finstat)
+                    exin = Exin(balance)
+                    widget.addWidget(exin)
                     break
                     
                 else:
@@ -195,175 +211,517 @@ class Main(QtWidgets.QMainWindow):
     def __init__(self,logincounter):
         QtWidgets.QMainWindow.__init__(self)
         loadUi("main.ui", self)
-       
         self.finstatbtn.clicked.connect(self.finstatwin)
         self.finstatbtn2.clicked.connect(self.finstatwin)
+        self.finstatbtn3.clicked.connect(self.finstatwin)
+        self.transbtn.clicked.connect(self.transwin)
+        self.transbtn2.clicked.connect(self.transwin)
         self.logincounter = logincounter
         print(len(transrows))
-        if len(transrows) > logincounter:       
+        print(logincounter)
+        if len(transrows)-1 > self.logincounter:       
             for i in transrows[self.logincounter]:
                 y = i.split(";") 
-                y[2] = int(y[2])
+                y[1] = int(y[1])
                 trans.append(y) 
-
+    def transwin(self):
+        print("Add Trans Button")
+        widget.setCurrentIndex(widget.currentIndex()+2)
+    
     def finstatwin(self):
-            print("Finstat Button")
-            widget.setCurrentIndex(widget.currentIndex()+1)
-            
+        print("Finstat Button")
+        login.finstat.start()
+        widget.setCurrentIndex(widget.currentIndex()+1)
+    
     def loaddata(self):
         # Load Database
-        print(self.logincounter)
+        return self.logincounter
         
 class Finstat(QtWidgets.QMainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         loadUi("finstat.ui", self)
+        self.graphbutton.clicked.connect(self.graphbtnclicked)  #Graph Button Callback    
+        self.homebutton.clicked.connect(self.homebtnclicked)  #Graph Button Callback
+        self.addbutton.clicked.connect(self.addbtnclicked)  #Graph Button Callback   
+        self.start()
+        self.monthselector.currentIndexChanged.connect(self.disp)
+
+    def start(self):
         count = 0
-        
         tempdate = []
         tempinc = []
         tempexp = []
         tempsuminc = 0
         tempsumexp = 0
+        # login.date = []
+        # login.month = []
+        
+        # login.inc =[]
+        # login.exp=[]
+        # login.suminc=[]
+        # login.sumexp=[]
         if len(trans) != 0:
+            self.monthselector.clear()
             for i in trans:
                 count += 1
                 moncounter = i[0][0:7]
                 mon = monthlist[int(moncounter[5:7])-1] + " "
                 mon += moncounter[0:4]
                 datelbl = i[0][8:10] + " " + mon
-                print(datelbl)
-                print(mon)
                 if count == 1:
-                    month.append(mon)
-                    self.monthselector.addItem(mon)
-                    self.monthlabel.setText(mon)       
-                if month[len(month)-1] == mon:
+                    if mon not in login.month:
+                        login.month.append(mon)      
+                if login.month[len(login.month)-1] == mon:
                     tempdate.append(datelbl)  
-                    if i[2] > 0:
-                        tempinc.append(i[2])
+                    if i[1] > 0:
+                        tempinc.append(i[1])
                         tempexp.append(0)
-                        tempsuminc += i[2]
-                    elif i[2] < 0:
-                        expe = i[2] * -1
+                        tempsuminc += i[1]
+                    elif i[1] < 0:
+                        expe = i[1] * -1
                         tempinc.append(0)
                         tempexp.append(expe)
                         tempsumexp += expe
                 else:
-                    self.monthselector.addItem(mon)
-                    month.append(mon)
-                    inc.append(tempinc[:])
-                    exp.append(tempexp[:])
-                    suminc.append(tempsuminc)
-                    sumexp.append(tempsumexp)
+                    if mon not in login.month:
+                        login.month.append(mon) 
+                    login.inc.append(tempinc[:])
+                    login.exp.append(tempexp[:])
+                    login.suminc.append(tempsuminc)
+                    login.sumexp.append(tempsumexp)
 
-                    date.append(tempdate[:])
-
+                    login.date.append(tempdate[:])
                     tempdate.clear()
                     tempinc.clear()
                     tempexp.clear()
                     tempsuminc = 0
                     tempsumexp = 0
-
-                    tempdate.append(i[0])
-                    if i[2] > 0:
-                        tempinc.append(i[2])
+                    tempdate.append(datelbl)
+                    
+                    if i[1] > 0:
+                        tempinc.append(i[1])
                         tempexp.append(0)
-                        tempsuminc += i[2]
-                    elif i[2] < 0:
-                        expe = i[2] * -1
+                        tempsuminc += i[1]
+                    
+                    elif i[1] < 0:
+                        expe = i[1] * -1
                         tempinc.append(0)
                         tempexp.append(expe)
                         tempsumexp += expe
-            date.append(tempdate[:])
-
-            inc.append(tempinc)
-            exp.append(tempexp)
-            suminc.append(tempsuminc)
-            sumexp.append(tempsumexp)
+            for a in login.month:
+                self.monthselector.addItem(a)            
+            self.monthselector.setCurrentIndex(0)
+            #Add data to global variable 
+            login.date.append(tempdate[:])
+            login.inc.append(tempinc)
+            login.exp.append(tempexp)
+            login.suminc.append(tempsuminc)
+            login.sumexp.append(tempsumexp)
       
         else:
             self.monthlabel.setText("-")
             self.monthincome.setText("-")
             self.monthexpen.setText("-")
-        
         #First initialize on UI
+
         self.disp(0)
-        balance = sum(suminc) - sum(sumexp)
-        balancelbl = "Rp.%d" % balance
+        self.balance = sum(login.suminc) - sum(login.sumexp)
+        balancelbl = "Rp.%d" % self.balance
         self.balancemoney.setText(balancelbl)
-        self.monthselector.currentIndexChanged.connect(self.disp)
-
-
     def disp(self,co):
-        for i in range(len(date[co])):
+        print("Initiating Display Financial Status Sequence")
+        print(login.date,login.inc,login.exp,login.suminc,login.sumexp)
+        tempsumoth = 0
+        tempexpoth = 0
+        self.co = co    #Month Selector
+        count = 1
+        a = 0 
+        for i in range(len(login.date[co])):  #Displaying 7 latest transactions on month GUI
             a = i+1
-            datelbl = "top%dlabel" % a
-            if inc[co][i] != 0:
-                inclbl = "Rp.%d" % inc[co][i]
+            if count < 7:
+                datelbl = "top%dlabel" % a
+                if login.inc[co][i] != 0:
+                    inclbl = "Rp.%d" % login.inc[co][i]
+                else:
+                    inclbl = "-"
+                if login.exp[co][i] != 0:
+                    explbl = "Rp.%d" % login.exp[co][i]
+                else:
+                    explbl = "-"
+                
+                #Initiating for exec command    
+                incomelbl = "top%dlabelinc" % a
+                expenlbl = "top%dlabelexp" % a
+                transdate = "self.%s.setText(login.date[co][i])" % datelbl
+                transinc = "self.%s.setText(inclbl)" % incomelbl
+                transexp = "self.%s.setText(explbl)" % expenlbl 
+                #Call exec
+                exec(transdate)
+                exec(transinc)
+                exec(transexp)
             else:
-                inclbl = "-"
-            if exp[co][i] != 0:
-                explbl = "Rp.%d" % exp[co][i]
-            else:
-                explbl = "-"
-            incomelbl = "top%dlabelinc" % a
-            expenlbl = "top%dlabelexp" % a
-            transdate = "self.%s.setText(date[co][i])" % datelbl
-            transinc = "self.%s.setText(inclbl)" % incomelbl
-            transexp = "self.%s.setText(explbl)" % expenlbl 
-            exec(transdate)
-            exec(transinc)
-            exec(transexp)
-        suminclbl= "Rp.%d" % suminc[co]
-        sumexplbl = "Rp.%d" % sumexp[co]
-        self.monthlabel.setText(month[co])
+                if len(login.date[co]) == 7:
+                    datelbl = "top%dlabel" % a
+                    if login.inc[co][i] != 0:
+                        inclbl = "Rp.%d" % login.inc[co][i]
+                    else:
+                        inclbl = "-"
+                    if login.exp[co][i] != 0:
+                        explbl = "Rp.%d" % login.exp[co][i]
+                    else:
+                        explbl = "-"
+                    
+                    #Initiating for exec command    
+                    incomelbl = "top%dlabelinc" % a
+                    expenlbl = "top%dlabelexp" % a
+                    transdate = "self.%s.setText(date[co][i])" % datelbl
+                    transinc = "self.%s.setText(inclbl)" % incomelbl
+                    transexp = "self.%s.setText(explbl)" % expenlbl 
+
+                    #Call exec
+                    exec(transdate)
+                    exec(transinc)
+                    exec(transexp)
+                else:
+                    tempsumoth += login.inc[co][i] 
+                    tempexpoth += login.exp[co][i]   
+                    if len(login.date[co]) == count:
+
+                        if tempsumoth != 0:
+                            inclbl = "Rp.%d" % tempsumoth
+                        else:
+                            inclbl = "-"
+                        if tempexpoth != 0:
+                            explbl = "Rp.%d" % tempexpoth
+                        else:
+                            explbl = "-"
+                        self.top7label.setText("Other")
+                        
+                        self.top7labelinc.setText(inclbl)
+                        self.top7labelexp.setText(explbl)   
+            count += 1
+            a += 1
+        while a <= 7:
+                #Initiating for exec command    
+                datelbl = "top%dlabel" % a
+                incomelbl = "top%dlabelinc" % a
+                
+                expenlbl = "top%dlabelexp" % a
+                n = "-"
+                transdate = "self.%s.setText(n)" % datelbl
+                transinc = "self.%s.setText(n)" % incomelbl
+                transexp = "self.%s.setText(n)" % expenlbl 
+
+                #Call exec
+                exec(transdate)
+                exec(transinc)
+                exec(transexp)
+                a += 1
+        #Income and Expenditure
+
+        suminclbl= "Rp.%d" % login.suminc[co]
+        sumexplbl = "Rp.%d" % login.sumexp[co]
+        
+        #Set month label on GUI
+        self.monthlabel.setText(login.month[co])
         self.monthincome.setText(suminclbl)
         self.monthexpen.setText(sumexplbl)
+    
+
+    def graphbtnclicked(self):  #Started Graph GUI
+        self.graphwin = Graph(self.co)
+        self.graphwin.show()
+
+    def addbtnclicked(self):
+        print("Trans Button")
+        widget.setCurrentIndex(widget.currentIndex()+1)
+    def homebtnclicked(self):
+        print("Home Button")
+        widget.setCurrentIndex(widget.currentIndex()-1)
+
+class Graph(QtWidgets.QMainWindow):
+    def __init__(self,co):
+        QtWidgets.QMainWindow.__init__(self)
+        loadUi("graph.ui", self)
+        self.co = co
+        self.graph.canvas.axes.clear()
+
+        if len(login.inc[co]) != 0:   #Initiating First Display on GUI
+            y = np.array(login.inc[co])
+            if max(y) < 100000:
+                y = y / 10000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Puluh Ribu Rupiah)")                
+            elif max(y) < 1000000:
+                y = y / 100000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Ratus Ribu Rupiah)")    
+            else:
+                y = y / 1000000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Juta Rupiah)")
+
+            self.datetemp =[]
+            for i in login.date[co]:
+                self.datetemp.append(i[0:6])
+            
+            #Plot the Graph
+            self.graph.canvas.axes.bar(self.datetemp,y, color = "#90ee90")
+            self.graph.canvas.axes.set_xlabel("Transactions")
+            self.graph.canvas.axes.set_title("Income")
+            self.graph.canvas.axes.figure.tight_layout()
+            self.graph.canvas.draw()
+        self.graphselector.currentIndexChanged.connect(self.disp)
+    
+    def disp(self,select):
+        print("Starting Graph Display Sequence")
         
-#Load Database
-file = open('database.csv')
-csvreader = csv.reader(file)
-header = []
-header = next(csvreader)
-rows = []
-monthlist = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Des"]
-for row in csvreader:
-    rows.append(row)
-file.close()
+        if select == 0:  #Income
+            self.graph.canvas.axes.clear()
+            self.graph.canvas.axes.set_title("Income")
+            y = np.array(login.inc[self.co])
+            if max(y) < 100000:
+                y = y / 10000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Puluh Ribu Rupiah)")                
+            elif max(y) < 1000000:
+                y = y / 100000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Ratus Ribu Rupiah)")    
+            else:
+                y = y / 1000000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Juta Rupiah)")
+            self.graph.canvas.axes.bar(self.datetemp,y, color = "#90ee90")
+        
+        elif select == 1: #Expenditure
+            self.graph.canvas.axes.clear()
+            self.graph.canvas.axes.set_title("Expenditure")
+            y = np.array(login.exp[self.co])
+            if max(y) < 100000:
+                y = y / 10000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Puluh Ribu Rupiah)")                
+            elif max(y) < 1000000:
+                y = y / 100000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Ratus Ribu Rupiah)")    
+            else:
+                y = y / 1000000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Juta Rupiah)")
+            self.graph.canvas.axes.bar(self.datetemp,y, color = "red")
+        
+        elif select == 2: #Total Balance
+            self.graph.canvas.axes.clear()
+            self.graph.canvas.axes.set_title("Balance")
+            y = np.array(login.inc[self.co] + (np.array(login.exp[self.co])) * -1) 
+            count = 0
+            for i in y:
+                if i != y[0]:
+                    y[count] += y[count-1]
+                count += 1
+            if max(y) < 100000:
+                y = y / 10000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Puluh Ribu Rupiah)")                
+            elif max(y) < 1000000:
+                y = y / 100000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Ratus Ribu Rupiah)")    
+            else:
+                y = y / 1000000
+                self.graph.canvas.axes.set_ylabel("Rupiah(dalam Juta Rupiah)")
+            
+            self.graph.canvas.axes.bar(self.datetemp,y, color = "blue")
+        
+        self.graph.canvas.axes.set_xlabel("Transactions")
+        self.graph.canvas.axes.figure.tight_layout()
+        self.graph.canvas.draw()
 
-month = []
-date = []
-inc = []
-exp =[]
-suminc = []
-sumexp = []
-balance = 0
-file2 = open('income.csv')
-csvreader = csv.reader(file2)
-headerinc = []
-headerinc = next(csvreader)
-transrows = []
-trans = []
-for row in csvreader:
-    transrows.append(row)
-file.close()
+class Exin(QtWidgets.QMainWindow):
+    def __init__(self, balance):
+        QtWidgets.QMainWindow.__init__(self)
+        loadUi("transaction.ui", self)
+        self.balance = balance
+        self.incline.clear()
+        self.expline.clear()
+        self.note.clear()
+        self.transactData = []
+        self.dateselected = QDate.currentDate().toPyDate()
+        self.date.setDisplayFormat("d MMM yyyy")
+        self.date.setDateTime(QtCore.QDateTime.currentDateTime())
+        self.savebutton.setEnabled(False)
+        self.savebutton.setStyleSheet("background-color:rgb(226,226,226);border-width: 2px;border-radius: 20px;padding: 4px;")
+        self.balancemoney.setText(str(balance))
+        self.savebutton.clicked.connect(self.Save)
+        self.confirmbutton1.clicked.connect(self.conf1)
+        self.confirmbutton2.clicked.connect(self.conf2)
+        self.date.dateChanged.connect(self.set_date)
+        self.tabWidget.currentChanged.connect(self.tabChanged)
+        self.homebutton.clicked.connect(self.home)
+        self.statementbutton.clicked.connect(self.statement)
 
-#Call Qt
-app = QtWidgets.QApplication(sys.argv)
-widget = QtWidgets.QStackedWidget()
-greet= Greet()
-login = Login()
-signup = Signup()
+    def home(self):
+        widget.setCurrentIndex(widget.currentIndex()-2)
+    def statement(self):
+        login.finstat.start()
+        widget.setCurrentIndex(widget.currentIndex()-1)
+    def tabChanged(self):
+        if self.tabWidget.currentIndex() == 0:
+            self.expline.clear()
+            self.note.clear()
+            self.date.setDateTime(QtCore.QDateTime.currentDateTime())
+        elif self.tabWidget.currentIndex() == 1:
+            self.incline.clear()
+            self.note.clear()
+            self.date.setDateTime(QtCore.QDateTime.currentDateTime())
 
-widget.addWidget(greet)
-widget.addWidget(login)
-widget.addWidget(signup)
-widget.setFixedHeight(201)
-widget.setFixedWidth(421)
-widget.show()
+    def conf1(self):
+        income = self.incline.text()
+        try:
+            income = int(income)
+            self.trans = int(income)
+            self.savebutton.setEnabled(True)
+            self.savebutton.setStyleSheet("background-color: rgb(85, 255, 0);border-width: 2px;border-radius: 20px;padding: 4px;")
+        except:
+            warn = QMessageBox()
+            warn.setWindowFlag(Qt.FramelessWindowHint)
+            #warn.setStyleSheet("background-color:white;")
+            warn.setText("Invalid Input!")
+            warn.setIcon(QMessageBox.Warning)
+            warn.setStandardButtons(QMessageBox.Ok)
+            warn.setDefaultButton(QMessageBox.Ok)
+            x = warn.exec_()
+            pass
+        
+    def conf2(self): 
+        expenditure = self.expline.text()
+        try:
+            expenditure = int(expenditure)
+            self.trans = int(expenditure)*-1
+            self.savebutton.setEnabled(True)
+            self.savebutton.setStyleSheet("background-color: rgb(85, 255, 0);border-width: 2px;border-radius: 20px;padding: 4px;")
+        except:
+            warn = QMessageBox()
+            warn.setWindowFlag(Qt.FramelessWindowHint)
+            #warn.setStyleSheet("background-color:white;")
+            warn.setText("Invalid Input!")
+            warn.setIcon(QMessageBox.Warning)
+            warn.setStandardButtons(QMessageBox.Ok)
+            warn.setDefaultButton(QMessageBox.Ok)
+            x = warn.exec_()
+            pass
+    
+    def set_date(self):
+        self.dateselected = self.date.date().toPyDate()
 
-try :
-    sys.exit(app.exec_())
-except:
-    print("Exiting")
+    def Save(self):
+        note = self.note.text()
+        if note == '':
+            note = '-'  
+        self.balance += self.trans 
+        self.datepicked = str(self.dateselected)
+        self.balancemoney.setText(str(self.balance))
+        '''
+        if self.trans < 0:
+            trans =  "'" + str(self.trans)
+        else:
+            trans = str(self.trans)
+            
+        self.transactData.append(self.datepicked)
+        self.transactData.append(trans)
+        self.transactData.append(note)
+        #transactData = self.datepicked+';'+trans+';'+note
+        print(self.transactData)
+        '''
+        if trans[0] == []:
+            rowsadded = []
+            rowsadded = [str(self.dateselected)]
+            rowsadded.append(int(self.trans))
+            rowsadded.append(note)
+            trans[0] = rowsadded[:]
+        else:
+            rowsadded = []
+            rowsadded = [str(self.dateselected)]
+            rowsadded.append(int(self.trans))
+            rowsadded.append(note)          
+            trans.append(rowsadded[:])
+        
+        
+        trans.sort()
+        trans.reverse() 
+        print(trans)
+        self.datepicked = None
+        self.trans = 0
+        self.incline.clear()
+        self.expline.clear()
+        self.note.clear()
+        self.savebutton.setEnabled(False)
+        self.savebutton.setStyleSheet("background-color:rgb(226,226,226);border-width: 2px;border-radius: 20px;padding: 4px;")
+        self.popup()
+        
+    def popup(self):
+        msg = QMessageBox()
+        msg.setWindowFlag(Qt.FramelessWindowHint)
+        msg.setText("Transaksi Anda Telah Disimpan!")
+        #msg.setStyleSheet("background-color:white;")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.setDefaultButton(QMessageBox.Ok)
+        x = msg.exec_()        
+
+if __name__ == "__main__":        
+    #Load Database
+    file = open('tes.csv')
+    csvreader = csv.reader(file)
+    header = []
+    header = next(csvreader)
+    alldata = []
+    rows = []
+    transrows = []
+
+    monthlist = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Des"]
+    for row in csvreader:
+        alldata.append(row)
+    file.close()
+    
+    for a in alldata:
+        rows.append(a[0:2][:])
+    for a in alldata:
+        transrows.append(a[2:len(a)][:])
+    
+    
+    trans = []
+    
+    #Call Qt
+    app = QtWidgets.QApplication(sys.argv)
+    widget = QtWidgets.QStackedWidget()
+    greet= Greet()
+    login = Login()
+    signup = Signup()
+
+    widget.addWidget(greet)
+    widget.addWidget(login)
+    widget.addWidget(signup)
+    widget.setFixedHeight(201)
+    widget.setFixedWidth(421)
+    widget.show()
+    # for i in transrows:
+    #     rows[count].append(transrows)
+    #     count += 1
+    try :
+        sys.exit(app.exec_())
+    except:
+        if len(trans) != 0:
+            count = 0
+            newrows = []
+            for transitem in trans:
+                transitem[1] = str(transitem[1])
+                string1 = ""
+                string1 = ';'.join(transitem)
+                newrows.append(string1[:])   
+                count +=1
+            # for i in transrows:
+            #     for endtrans in i:           
+            count = 0
+            logincount = login.main.logincounter
+            for i in newrows:
+                rows[logincount].append(i)
+            print(rows)
+
+            with open('income.csv',mode='w', newline = '') as file:
+                writer = csv.writer(file,delimiter=",")
+                writer.writerow(header)
+                for row in rows:
+                    writer.writerow(row)
+        print("Exiting")

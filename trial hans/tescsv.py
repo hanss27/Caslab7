@@ -1,7 +1,7 @@
 import os, sys, csv
 
 #Load Database
-file = open('income.csv')
+file = open('tes.csv')
 csvreader = csv.reader(file)
 header = []
 header = next(csvreader)
@@ -13,11 +13,16 @@ print(a[:len(a)-3])
 for row in csvreader:
     rows.append(row)
 file.close()
+first = []
+a = [['2021-10-05',100,'a'], ['2021-10-05',300,'b'],['2021-10-05',10,'c']]
 
-for i in rows[0]:
-    y = i.split(";")
-    income.append(int(y[0]))
-    note.append(y[1])   
+# for a in rows:
+#     income.append(a[2:len(a)][:])
 
-print(income)
-print(note)
+# for a in rows:
+#     first.append(a[0:3][:])
+# count = 0
+# for i in income:
+#         for a in i:
+#             first[count].append(a)
+#         count += 1
