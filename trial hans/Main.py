@@ -217,14 +217,15 @@ class Main(QtWidgets.QMainWindow):
         self.transbtn.clicked.connect(self.transwin)
         self.transbtn2.clicked.connect(self.transwin)
         self.logincounter = logincounter
-        print(len(transrows))
-        print(logincounter)
+
         if len(transrows)-1 > self.logincounter:       
             for i in transrows[self.logincounter]:
-                y = i.split(";")
-                
-                y[1] = int(y[1])
-                trans.append(y) 
+                if i != '':
+                    y = i.split(";")
+                    y[1] = int(y[1])
+                    trans.append(y)
+                else:
+                    trans.append(i) 
     def transwin(self):
         print("Add Trans Button")
         widget.setCurrentIndex(widget.currentIndex()+2)
@@ -261,12 +262,14 @@ class Finstat(QtWidgets.QMainWindow):
         login.exp.clear()
         login.suminc.clear()
         login.sumexp.clear()
-
-        if len(trans) != 0:
-            self.monthselector.clear()
-            for i in trans:
+        
+        self.monthselector.clear()
+        
+        for i in trans:
+            if i != '':
                 count += 1
                 moncounter = i[0][0:7]
+
                 mon = monthlist[int(moncounter[5:7])-1] + " "
                 mon += moncounter[0:4]
                 datelbl = i[0][8:10] + " " + mon
@@ -310,21 +313,23 @@ class Finstat(QtWidgets.QMainWindow):
                         tempinc.append(0)
                         tempexp.append(expe)
                         tempsumexp += expe
+            else:
+                break
+        if login.month != []:
             for a in login.month:
-                print(login.month)
                 self.monthselector.addItem(a)            
             self.monthselector.setCurrentIndex(0)
             #Add data to global variable 
-            login.date.append(tempdate[:])
-            login.inc.append(tempinc)
-            login.exp.append(tempexp)
-            login.suminc.append(tempsuminc)
-            login.sumexp.append(tempsumexp)
-      
         else:
             self.monthlabel.setText("-")
             self.monthincome.setText("-")
             self.monthexpen.setText("-")
+        login.date.append(tempdate[:])
+        login.inc.append(tempinc)
+        login.exp.append(tempexp)
+        login.suminc.append(tempsuminc)
+        login.sumexp.append(tempsumexp)
+        
         #First initialize on UI
         self.balance = sum(login.suminc) - sum(login.sumexp)
         balancelbl = "Rp.%d" % self.balance
@@ -340,13 +345,11 @@ class Finstat(QtWidgets.QMainWindow):
 
     def disp(self,co):
         print("Initiating Display Financial Status Sequence")
-        # print(login.date,login.inc,login.exp,login.suminc,login.sumexp)
-        print("Tes", self.date)
         tempsumoth = 0
         tempexpoth = 0
         self.co = co    #Month Selector
         count = 1
-        a = 0 
+        a = 1 
         for i in range(len(self.date[co])):  #Displaying 7 latest transactions on month GUI
             a = i+1
             if count < 7:
@@ -434,10 +437,14 @@ class Finstat(QtWidgets.QMainWindow):
         sumexplbl = "Rp.%d" % self.sumexp[co]
         
         #Set month label on GUI
-        self.monthlabel.setText(self.month[co])
-        self.monthincome.setText(suminclbl)
-        self.monthexpen.setText(sumexplbl)
-    
+        if self.month != []:
+            self.monthlabel.setText(self.month[co])
+            self.monthincome.setText(suminclbl)
+            self.monthexpen.setText(sumexplbl)
+        else:
+            self.monthlabel.setText("-")
+            self.monthincome.setText("-")
+            self.monthexpen.setText("-")
 
     def graphbtnclicked(self):  #Started Graph GUI
         self.graphwin = Graph(self.co)
@@ -635,23 +642,31 @@ class Exin(QtWidgets.QMainWindow):
         #transactData = self.datepicked+';'+trans+';'+note
         print(self.transactData)
         '''
-        if trans[0] == []:
+        if trans == []:
             rowsadded = []
             rowsadded = [str(self.dateselected)]
             rowsadded.append(int(self.trans))
             rowsadded.append(note)
-            trans[0] = rowsadded[:]
+            trans.append(rowsadded[:])
         else:
             rowsadded = []
             rowsadded = [str(self.dateselected)]
             rowsadded.append(int(self.trans))
             rowsadded.append(note)          
             trans.append(rowsadded[:])
-        
-        
+        count = 0
+        for a in trans:
+            if a == '':
+                trans[count] = ['']
+            count += 1
+
         trans.sort()
-        trans.reverse() 
-        print(trans)
+        trans.reverse()
+        count = 0 
+        for a in trans:
+            if a == ['']:
+                trans[count] = ''
+            count += 1
         self.datepicked = None
         self.trans = 0
         self.incline.clear()
@@ -722,8 +737,9 @@ if __name__ == "__main__":
             # for i in transrows:
             #     for endtrans in i:           
             count = 0
-            file = []
             logincount = login.main.logincounter
+            file = rows[logincount]
+
             for i in newrows:
                 file.append(i)
 
