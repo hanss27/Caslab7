@@ -221,7 +221,8 @@ class Main(QtWidgets.QMainWindow):
         print(logincounter)
         if len(transrows)-1 > self.logincounter:       
             for i in transrows[self.logincounter]:
-                y = i.split(";") 
+                y = i.split(";")
+                
                 y[1] = int(y[1])
                 trans.append(y) 
     def transwin(self):
@@ -254,13 +255,13 @@ class Finstat(QtWidgets.QMainWindow):
         tempexp = []
         tempsuminc = 0
         tempsumexp = 0
-        # login.date = []
-        # login.month = []
-        
-        # login.inc =[]
-        # login.exp=[]
-        # login.suminc=[]
-        # login.sumexp=[]
+        login.date.clear()
+        login.month.clear()
+        login.inc.clear()
+        login.exp.clear()
+        login.suminc.clear()
+        login.sumexp.clear()
+
         if len(trans) != 0:
             self.monthselector.clear()
             for i in trans:
@@ -310,6 +311,7 @@ class Finstat(QtWidgets.QMainWindow):
                         tempexp.append(expe)
                         tempsumexp += expe
             for a in login.month:
+                print(login.month)
                 self.monthselector.addItem(a)            
             self.monthselector.setCurrentIndex(0)
             #Add data to global variable 
@@ -324,36 +326,44 @@ class Finstat(QtWidgets.QMainWindow):
             self.monthincome.setText("-")
             self.monthexpen.setText("-")
         #First initialize on UI
-
-        self.disp(0)
         self.balance = sum(login.suminc) - sum(login.sumexp)
         balancelbl = "Rp.%d" % self.balance
         self.balancemoney.setText(balancelbl)
+
+        self.date = login.date[:]
+        self.inc = login.inc[:]
+        self.exp = login.exp[:]
+        self.suminc = login.suminc[:]
+        self.sumexp = login.sumexp[:]
+        self.month = login.month[:]
+        self.disp(0)
+
     def disp(self,co):
         print("Initiating Display Financial Status Sequence")
-        print(login.date,login.inc,login.exp,login.suminc,login.sumexp)
+        # print(login.date,login.inc,login.exp,login.suminc,login.sumexp)
+        print("Tes", self.date)
         tempsumoth = 0
         tempexpoth = 0
         self.co = co    #Month Selector
         count = 1
         a = 0 
-        for i in range(len(login.date[co])):  #Displaying 7 latest transactions on month GUI
+        for i in range(len(self.date[co])):  #Displaying 7 latest transactions on month GUI
             a = i+1
             if count < 7:
                 datelbl = "top%dlabel" % a
-                if login.inc[co][i] != 0:
-                    inclbl = "Rp.%d" % login.inc[co][i]
+                if self.inc[co][i] != 0:
+                    inclbl = "Rp.%d" % self.inc[co][i]
                 else:
                     inclbl = "-"
-                if login.exp[co][i] != 0:
-                    explbl = "Rp.%d" % login.exp[co][i]
+                if self.exp[co][i] != 0:
+                    explbl = "Rp.%d" % self.exp[co][i]
                 else:
                     explbl = "-"
                 
                 #Initiating for exec command    
                 incomelbl = "top%dlabelinc" % a
                 expenlbl = "top%dlabelexp" % a
-                transdate = "self.%s.setText(login.date[co][i])" % datelbl
+                transdate = "self.%s.setText(self.date[co][i])" % datelbl
                 transinc = "self.%s.setText(inclbl)" % incomelbl
                 transexp = "self.%s.setText(explbl)" % expenlbl 
                 #Call exec
@@ -361,21 +371,21 @@ class Finstat(QtWidgets.QMainWindow):
                 exec(transinc)
                 exec(transexp)
             else:
-                if len(login.date[co]) == 7:
+                if len(self.date[co]) == 7:
                     datelbl = "top%dlabel" % a
-                    if login.inc[co][i] != 0:
-                        inclbl = "Rp.%d" % login.inc[co][i]
+                    if self.inc[co][i] != 0:
+                        inclbl = "Rp.%d" % self.inc[co][i]
                     else:
                         inclbl = "-"
-                    if login.exp[co][i] != 0:
-                        explbl = "Rp.%d" % login.exp[co][i]
+                    if self.exp[co][i] != 0:
+                        explbl = "Rp.%d" % self.exp[co][i]
                     else:
                         explbl = "-"
                     
                     #Initiating for exec command    
                     incomelbl = "top%dlabelinc" % a
                     expenlbl = "top%dlabelexp" % a
-                    transdate = "self.%s.setText(date[co][i])" % datelbl
+                    transdate = "self.%s.setText(self.date[co][i])" % datelbl
                     transinc = "self.%s.setText(inclbl)" % incomelbl
                     transexp = "self.%s.setText(explbl)" % expenlbl 
 
@@ -384,9 +394,9 @@ class Finstat(QtWidgets.QMainWindow):
                     exec(transinc)
                     exec(transexp)
                 else:
-                    tempsumoth += login.inc[co][i] 
-                    tempexpoth += login.exp[co][i]   
-                    if len(login.date[co]) == count:
+                    tempsumoth += self.inc[co][i] 
+                    tempexpoth += self.exp[co][i]   
+                    if len(self.date[co]) == count:
 
                         if tempsumoth != 0:
                             inclbl = "Rp.%d" % tempsumoth
@@ -420,11 +430,11 @@ class Finstat(QtWidgets.QMainWindow):
                 a += 1
         #Income and Expenditure
 
-        suminclbl= "Rp.%d" % login.suminc[co]
-        sumexplbl = "Rp.%d" % login.sumexp[co]
+        suminclbl= "Rp.%d" % self.suminc[co]
+        sumexplbl = "Rp.%d" % self.sumexp[co]
         
         #Set month label on GUI
-        self.monthlabel.setText(login.month[co])
+        self.monthlabel.setText(self.month[co])
         self.monthincome.setText(suminclbl)
         self.monthexpen.setText(sumexplbl)
     
@@ -447,8 +457,8 @@ class Graph(QtWidgets.QMainWindow):
         self.co = co
         self.graph.canvas.axes.clear()
 
-        if len(login.inc[co]) != 0:   #Initiating First Display on GUI
-            y = np.array(login.inc[co])
+        if len(login.finstat.inc[co]) != 0:   #Initiating First Display on GUI
+            y = np.array(login.finstat.inc[co])
             if max(y) < 100000:
                 y = y / 10000
                 self.graph.canvas.axes.set_ylabel("Rupiah(dalam Puluh Ribu Rupiah)")                
@@ -460,7 +470,7 @@ class Graph(QtWidgets.QMainWindow):
                 self.graph.canvas.axes.set_ylabel("Rupiah(dalam Juta Rupiah)")
 
             self.datetemp =[]
-            for i in login.date[co]:
+            for i in login.finstat.date[co]:
                 self.datetemp.append(i[0:6])
             
             #Plot the Graph
@@ -477,7 +487,7 @@ class Graph(QtWidgets.QMainWindow):
         if select == 0:  #Income
             self.graph.canvas.axes.clear()
             self.graph.canvas.axes.set_title("Income")
-            y = np.array(login.inc[self.co])
+            y = np.array(login.finstat.inc[self.co])
             if max(y) < 100000:
                 y = y / 10000
                 self.graph.canvas.axes.set_ylabel("Rupiah(dalam Puluh Ribu Rupiah)")                
@@ -492,7 +502,7 @@ class Graph(QtWidgets.QMainWindow):
         elif select == 1: #Expenditure
             self.graph.canvas.axes.clear()
             self.graph.canvas.axes.set_title("Expenditure")
-            y = np.array(login.exp[self.co])
+            y = np.array(login.finstat.exp[self.co])
             if max(y) < 100000:
                 y = y / 10000
                 self.graph.canvas.axes.set_ylabel("Rupiah(dalam Puluh Ribu Rupiah)")                
@@ -507,7 +517,7 @@ class Graph(QtWidgets.QMainWindow):
         elif select == 2: #Total Balance
             self.graph.canvas.axes.clear()
             self.graph.canvas.axes.set_title("Balance")
-            y = np.array(login.inc[self.co] + (np.array(login.exp[self.co])) * -1) 
+            y = np.array(login.finstat.inc[self.co] + (np.array(login.finstat.exp[self.co])) * -1) 
             count = 0
             for i in y:
                 if i != y[0]:
@@ -696,9 +706,7 @@ if __name__ == "__main__":
     widget.setFixedHeight(201)
     widget.setFixedWidth(421)
     widget.show()
-    # for i in transrows:
-    #     rows[count].append(transrows)
-    #     count += 1
+   
     try :
         sys.exit(app.exec_())
     except:
@@ -714,14 +722,15 @@ if __name__ == "__main__":
             # for i in transrows:
             #     for endtrans in i:           
             count = 0
+            file = []
             logincount = login.main.logincounter
             for i in newrows:
-                rows[logincount].append(i)
-            print(rows)
+                file.append(i)
 
+            alldata[logincount] = file
             with open('income.csv',mode='w', newline = '') as file:
                 writer = csv.writer(file,delimiter=",")
                 writer.writerow(header)
-                for row in rows:
+                for row in alldata:
                     writer.writerow(row)
         print("Exiting")
