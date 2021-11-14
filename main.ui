@@ -48,9 +48,9 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>290</y>
+      <y>280</y>
       <width>251</width>
-      <height>41</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -68,7 +68,7 @@
      <string>Financial Statement</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="signupbutton">
+   <widget class="QPushButton" name="transbtn">
     <property name="geometry">
      <rect>
       <x>150</x>
@@ -220,7 +220,7 @@ Transactions</string>
      <string>Profit               :</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelun_5">
+   <widget class="QLabel" name="incomelbl">
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -245,7 +245,7 @@ background-color:white;</string>
      <string>Rp 0</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelun_6">
+   <widget class="QLabel" name="profitlbl">
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -270,7 +270,7 @@ background-color:white;</string>
      <string>Rp 0</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelun_7">
+   <widget class="QLabel" name="explbl">
     <property name="geometry">
      <rect>
       <x>340</x>
@@ -403,7 +403,7 @@ background-color:white;</string>
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="signupbutton_3">
+   <widget class="QPushButton" name="finstatbtn3">
     <property name="geometry">
      <rect>
       <x>110</x>
@@ -445,7 +445,7 @@ background-image : url(img/transactions.png)</string>
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="signupbutton_4">
+   <widget class="QPushButton" name="finstatbtn">
     <property name="geometry">
      <rect>
       <x>400</x>
@@ -576,7 +576,7 @@ background-image : url(img/addnotfilled.png)
      <string/>
     </property>
    </widget>
-   <widget class="QPushButton" name="signupbutton_5">
+   <widget class="QPushButton" name="homebtn">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -602,7 +602,7 @@ background-image : url(img/addnotfilled.png)
 Home</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="signupbutton_6">
+   <widget class="QPushButton" name="transbtn2">
     <property name="geometry">
      <rect>
       <x>260</x>
@@ -629,7 +629,7 @@ Home</string>
 Add Transactions</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="signupbutton_7">
+   <widget class="QPushButton" name="finstatbtn2">
     <property name="geometry">
      <rect>
       <x>470</x>
@@ -681,32 +681,57 @@ background-image : url(img/notes.png)
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="labelun_5">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>320</y>
+      <width>251</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Champagne &amp; Limousines</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:white;</string>
+    </property>
+    <property name="text">
+     <string>Latest Month</string>
+    </property>
+   </widget>
    <zorder>graphlabel_6</zorder>
-   <zorder>signupbutton_6</zorder>
+   <zorder>transbtn2</zorder>
    <zorder>graphlabel_3</zorder>
    <zorder>graphlabel_4</zorder>
    <zorder>graphlabel_5</zorder>
    <zorder>graphlabel_2</zorder>
    <zorder>welcomelabel</zorder>
    <zorder>labelun</zorder>
-   <zorder>signupbutton</zorder>
+   <zorder>transbtn</zorder>
    <zorder>balancelabel</zorder>
    <zorder>balancemoney</zorder>
    <zorder>labelun_2</zorder>
    <zorder>labelun_3</zorder>
    <zorder>labelun_4</zorder>
-   <zorder>labelun_5</zorder>
-   <zorder>labelun_6</zorder>
-   <zorder>labelun_7</zorder>
-   <zorder>signupbutton_3</zorder>
+   <zorder>incomelbl</zorder>
+   <zorder>profitlbl</zorder>
+   <zorder>explbl</zorder>
+   <zorder>finstatbtn3</zorder>
    <zorder>labelun_8</zorder>
-   <zorder>signupbutton_4</zorder>
+   <zorder>finstatbtn</zorder>
    <zorder>labelun_9</zorder>
-   <zorder>signupbutton_5</zorder>
+   <zorder>homebtn</zorder>
    <zorder>labelun_10</zorder>
    <zorder>labelun_12</zorder>
-   <zorder>signupbutton_7</zorder>
+   <zorder>finstatbtn2</zorder>
    <zorder>labelun_13</zorder>
+   <zorder>labelun_5</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

@@ -11,13 +11,16 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Sign Up</string>
+   <string>Transaction</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(248, 237, 215);</string>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="welcomelabel">
@@ -261,7 +264,7 @@ Home</string>
 Add Transactions</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="statementlabel">
+   <widget class="QPushButton" name="statementbutton">
     <property name="geometry">
      <rect>
       <x>470</x>
@@ -630,7 +633,7 @@ background-color: rgb(200, 224, 218);</string>
    <zorder>homebutton</zorder>
    <zorder>homeicon</zorder>
    <zorder>addicon</zorder>
-   <zorder>statementlabel</zorder>
+   <zorder>statementbutton</zorder>
    <zorder>statementicon</zorder>
    <zorder>line</zorder>
    <zorder>savebutton</zorder>
